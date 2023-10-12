@@ -1,0 +1,142 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.btn-icon{
+  border: none;
+  background-color: white;
+}
+
+/* Bootstrap */
+
+.nav-link{
+  color: black;
+}
+
+.btn{
+  font-weight: bold;
+}
+
+/* Planning view */
+
+.planning-sidebar{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  border-right: 1px solid #EFEFEF;
+  width: 12rem;
+}
+
+.planning-wrapper{
+  margin-left: 12rem;
+}
+
+.week-list{
+  margin: 2rem;
+  font-weight: bold;
+}
+
+.back-link{
+  margin: 5rem 2rem;
+  color: black;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.back-link-wrapper{
+  border-bottom: 1px solid #EFEFEF;
+}
+
+.planning-actions{
+  padding: 3rem 2rem;
+  border-top: 1px solid #EFEFEF;
+}
+
+.new-semester-btn{
+  border: none;
+  background-color: white;
+  font-weight: bold;
+  height: 100vh;
+  width: 7rem;
+  font-size: 4rem;
+  color: #EFEFEF;
+  transition: 0.2s ease-in-out;
+  border-right: 1px solid #EFEFEF;
+}
+
+.new-semester-btn:hover{
+  color: black;
+  background-color: #fcfcfc;
+  font-size: 5rem;
+}
+
+.period{
+  border-right: 1px solid #EFEFEF;
+  width: 15rem;
+}
+
+.period-list{
+  list-style: none;
+  margin-left: 1rem;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.slot{
+  height: 3.5rem;
+}
+
+.your-plan{
+  border-right: 1px solid #EFEFEF;
+  width: 15rem;
+}
+
+.lesson{
+  width: 100%;
+  display: flex;
+  border: none;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  justify-content: space-between;
+}
+
+.lesson-type{
+  background-color: #0a58ca;
+  font-weight: bold;
+  color: white;
+  border-bottom-right-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  padding: 0 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.lesson-icon{
+  visibility: hidden;
+  margin-right: 1rem;
+  transition: 0.2s ease-in-out;
+}
+
+.lesson:hover .remove-icon{
+  visibility: visible;
+}
+
+.semester{
+    border-right: 1px solid #EFEFEF;
+    width: 15rem;
+}
+
+.your-plan-header{
+  height: 6rem;
+} 
+
+.your-plan-header h5{
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+

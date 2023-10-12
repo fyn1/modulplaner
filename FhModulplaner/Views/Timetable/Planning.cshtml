@@ -1,0 +1,314 @@
+﻿@using FhModulplaner.Models.Timetable
+@model FhModulplaner.Models.Timetable.PlanningViewModel
+
+<aside class="planning-sidebar">
+
+    <div class="py-3 back-link-wrapper">
+        <a class="back-link">
+            <i class="bi bi-caret-left-fill"></i>
+            <span>Back</span>
+        </a>
+    </div>
+
+    <ul class="nav nav-pills flex-column week-list">
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-center @(Model.OpenDayOfWeek is DayOfWeek.Monday ? "active" : "")" asp-route-timetableId="@Model.TimetableId" asp-route-openDayOfWeek="Monday" asp-action="Planning" asp-controller="Timetable">Montag</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-center @(Model.OpenDayOfWeek is DayOfWeek.Tuesday ? "active" : "")" asp-route-timetableId="@Model.TimetableId" asp-route-openDayOfWeek="Tuesday" asp-action="Planning" asp-controller="Timetable">Dienstag</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-center @(Model.OpenDayOfWeek is DayOfWeek.Wednesday ? "active" : "")" asp-route-timetableId="@Model.TimetableId" asp-route-openDayOfWeek="Wednesday" asp-action="Planning" asp-controller="Timetable">Mittwoch</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-center @(Model.OpenDayOfWeek is DayOfWeek.Thursday ? "active" : "")" asp-route-timetableId="@Model.TimetableId" asp-route-openDayOfWeek="Thursday" asp-action="Planning" asp-controller="Timetable">Donnerstag</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-center @(Model.OpenDayOfWeek is DayOfWeek.Friday ? "active" : "")" asp-route-timetableId="@Model.TimetableId" asp-route-openDayOfWeek="Friday" asp-action="Planning" asp-controller="Timetable">Freitag</a>
+        </li>
+    </ul>
+
+    <div class="planning-actions d-flex flex-column">
+        <button type="button" class="btn btn-dark mb-3">Exportieren</button>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#saveModal">
+            Speichern
+        </button>
+        <button type="button" class="btn btn-outline-danger">Löschen</button>
+    </div>
+
+</aside>
+
+<div class="planning-wrapper d-flex">
+
+    <div class="period">
+
+        <div class="your-plan-header m-3">
+            <div class="d-flex justify-content-end w-100">
+                <i class="bi bi-bootstrap-reboot fs-4 text-white"></i>
+            </div>
+
+            <h5>Zeitraum</h5>
+        </div>
+
+        <ul class="period-list">
+            <li class="slot">08:30 - 09:15</li>
+            <li class="slot">09:20 - 10:05</li>
+            <li class="slot">10:15 - 11:00</li>
+            <li class="slot">12:00 - 12:45</li>
+            <li class="slot">12:50 - 13:35</li>
+            <li class="slot">14:15 - 15:00</li>
+            <li class="slot">15:05 - 15:50</li>
+            <li class="slot">16:00 - 16:45</li>
+            <li class="slot">16:50 - 17:35</li>
+            <li class="slot">17:45 - 18:30</li>
+            <li class="slot">18:35 - 19:20</li>
+            <li class="slot">19:30 - 20:15</li>
+            <li class="slot">20:20 - 21:05</li>
+            <li class="slot">21:15 - 22:00</li>
+        </ul>
+
+    </div>
+
+    <div class="your-plan">
+
+        <div class="your-plan-header m-3">
+            <div class="d-flex justify-content-end w-100">
+                <form asp-action="ResetTimetable" asp-controller="Timetable" method="post">
+                    <input type="hidden" value="@Model.TimetableId" name="timetableId"/>
+                    <button type="submit" class="btn-icon">
+                        <i class="bi bi-bootstrap-reboot fs-4"></i>
+                    </button>
+                </form>
+            </div>
+
+            <h5>Dein Plan</h5>
+        </div>
+
+        @foreach (var lesson in Model.PlannedLessons)
+        {
+            @if (lesson == LessonDto.Empty)
+            {
+                <div class="slot opacity-0">Empty</div>
+            }
+            else
+            {
+                <form asp-action="RemoveLesson" asp-controller="Timetable" asp-route-openDayOfWeek="@Model.OpenDayOfWeek" method="post">
+                    <input type="hidden" value="@Model.TimetableId" name="timetableId"/>
+                    <input type="hidden" value="@lesson.Id" name="lessonId"/>
+                    <button type="submit" class="lesson slot">
+                        <div class="d-flex">
+                            <span class="lesson-type">
+                                @lesson.TypeSymbol
+                            </span>
+                            <p class="fw-bold m-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@lesson.CourseName">@lesson.TrimmedCourseName</p>
+                        </div>
+
+                        <i class="bi bi-x lesson-icon"></i>
+                    </button>
+                </form>
+            }
+        }
+
+    </div>
+
+    @foreach (var openSemester in Model.OpenSemesters)
+    {
+        @foreach (var timeSlot in openSemester.Lessons)
+        {
+            <div class="semester">
+                <div class="your-plan-header m-3">
+                    <div class="d-flex justify-content-end w-100">
+                        <form asp-action="RemoveSemester" asp-controller="Timetable" method="post">
+                            <input type="hidden" value="@Model.TimetableId" name="timetableId"/>
+                            <input type="hidden" value="@Model.OpenDayOfWeek" name="openDayOfWeek"/>
+                            <input type="hidden" value="@openSemester.Id" name="openSemesterId"/>
+                            <button type="submit" class="btn-icon">
+                                <i class="bi bi-x fs-4"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <h5>@(openSemester.CourseOfStudyShortName)</h5>
+                    <small class="fw-bold">@openSemester.Semester Semester</small>
+                </div>
+
+                @foreach (var lesson in timeSlot)
+                {
+                    @if (lesson == LessonDto.Empty)
+                    {
+                        <div class="slot opacity-0">Empty</div>
+                    }
+                    else
+                    {
+                        <form asp-action="AddLesson" asp-controller="Timetable" asp-route-openDayOfWeek="@Model.OpenDayOfWeek" method="post">
+                            <input type="hidden" value="@Model.TimetableId" name="timetableId"/>
+                            <input type="hidden" value="@lesson.Id" name="lessonId"/>
+                            <button type="submit" class="lesson slot">
+                                <div class="d-flex">
+                                    <span class="lesson-type">
+                                        @lesson.TypeSymbol
+                                    </span>
+                                    <p class="fw-bold m-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@lesson.CourseName">@lesson.TrimmedCourseName</p>
+                                </div>
+
+                                <i class="bi bi-plus lesson-icon"></i>
+                            </button>
+                        </form>
+                    }
+                }
+
+            </div>
+        }
+    }
+    
+    @foreach (var openTimetable in @Model.OpenTimetables)
+    {
+        <div class="semester">
+            <div class="your-plan-header m-3">
+                <div class="d-flex justify-content-end w-100">
+                    <form asp-action="RemoveOpenTimetable" asp-controller="Timetable" method="post">
+                        <input type="hidden" value="@Model.TimetableId" name="timetableId"/>
+                        <input type="hidden" value="@openTimetable.Id" name="openTimetableId"/>
+                        <button type="submit" class="btn-icon">
+                            <i class="bi bi-x fs-4"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <h5>@openTimetable.Name</h5>
+                <small class="fw-bold"></small>
+            </div>
+        
+        
+            @foreach (var lesson in openTimetable.Lessons)
+            {
+                @if (lesson == LessonDto.Empty)
+                {
+                    <div class="slot opacity-0">Empty</div>
+                }
+                else
+                {
+                    <form asp-action="AddLesson" asp-controller="Timetable" asp-route-openDayOfWeek="@Model.OpenDayOfWeek" method="post">
+                        <input type="hidden" value="@Model.TimetableId" name="timetableId"/>
+                        <input type="hidden" value="@lesson.Id" name="lessonId"/>
+                        <button type="submit" class="lesson slot">
+                            <div class="d-flex">
+                                <span class="lesson-type">
+                                    @lesson.TypeSymbol
+                                </span>
+                                <p class="fw-bold m-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@lesson.CourseName">@lesson.TrimmedCourseName</p>
+                            </div>
+
+                            <i class="bi bi-plus lesson-icon"></i>
+                        </button>
+                    </form>
+                }
+            }
+        </div>
+    }
+
+    <button type="button" class="new-semester-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+</div>
+
+<!-- Modal Semester hinzufügen -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Semester hinzufügen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form asp-controller="Timetable" asp-action="NewSemester" method="post">
+                    <input type="hidden" name="timetableId" value="@Model.TimetableId"/>
+                    <div class="mb-3">
+                        <label for="courseOfStudy">Studiengänge</label>
+                        <select id="courseOfStudySelect" onchange="fetchData()" name="courseOfStudyId" class="form-select">
+                            @foreach (var courseOfStudy in Model.CoursesOfStudy)
+                            {
+                                <option value="@courseOfStudy.Id">@courseOfStudy.ShortName (@courseOfStudy.Name)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="semester">Semester</label>
+                        <select id="semesterSelect" name="semester" class="form-select">
+                            <option value="">Bitte erst Studiengang wählen</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Semester hinzufügen</button>
+                </form>
+                <form asp-action="AddOpenTimetable" asp-controller="Timetable" method="post">
+                    <input type="hidden" name="timetableId" value="@Model.TimetableId"/>
+                    <div class="mb-3 mt-3">
+                        <label for="openTimetableId">Bereits erstellte Modulpläne</label>
+                        <select id="openTimetableId" name="openTimetableId" class="form-select">
+                            @foreach (var timetable in Model.TimetablesFromUsers)
+                            {
+                                <option value="@timetable.Id">@timetable.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Modulplan hinzufügen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Timetable in Db speichern -->
+<div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="saveModalLabel">Modulplan speichern</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Timetable" asp-action="SaveTimetable" method="post">
+                <input type="hidden" name="timetableId" value="@Model.TimetableId"/>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="timetableName" class="form-label">Name des Modulplans</label>
+                        <input type="text" class="form-control" id="timetableName" name="timetableName">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+       function fetchData() {
+           const selectedValue = document.getElementById('courseOfStudySelect').value;
+
+           const url = `/Timetable/GetSemester?courseofStudyId=${selectedValue}`;
+
+           fetch(url)
+               .then(response => response.json()) 
+               .then(data => {
+                   const semesterSelect = document.getElementById('semesterSelect');
+
+                   while (semesterSelect.firstChild) {
+                       semesterSelect.removeChild(semesterSelect.firstChild);
+                   }
+
+                   data.forEach(optionValue => {
+                       const option = document.createElement('option');
+                       option.value = optionValue;
+                       option.textContent = optionValue;
+                       semesterSelect.appendChild(option);
+                   });
+               })
+               .catch(error => {
+                   console.error('Fehler beim Ausführen des GET-Requests:', error);
+               });
+       }
+    </script>
+}
